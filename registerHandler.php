@@ -21,8 +21,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $email = $_POST['email'];
   $password = $_POST['psw'];
 
-  // Insert data into the 'users' table
-  $sql = "INSERT INTO regInfo (username, password, email) VALUES ('$uname','$password','$email')";
+  // Perform input validation here...
+
+  // Generate a random salt
+  $salt = bin2hex(random_bytes(16));
+
+  // Hash the password with the salt using bcrypt
+  $hashedPassword = password_hash($password . $salt, PASSWORD_BCRYPT, ['cost' => 12]);
+
+  // Insert data into the 'regInfo' table with the hashed password and salt
+  $sql = "INSERT INTO regInfo (username, password, email, salt) VALUES ('$uname', '$hashedPassword', '$email', '$salt')";
 
   if ($conn->query($sql) === TRUE) {
     echo 'Registration successful!';

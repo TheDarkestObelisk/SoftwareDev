@@ -69,7 +69,7 @@ a {
 <body>
 
 <form method="post" action=""> <!-- Add form tag and action attribute -->
-	<label for="username"><b>Username</b></label><br>
+  <label for="username"><b>Username</b></label><br>
   <input type="text" placeholder="Enter Username" name="username" id="username" required>
   <br><br>
   
@@ -77,7 +77,7 @@ a {
   <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
   <hr>
   <button type="submit" class="registerbtn">Login</button>
-</form> <!-- Close the form tag here -->
+</form> 
 
 <div class="container signin">
   <p>Don't have an account? <a href="register.php">Register</a>.</p>
@@ -104,15 +104,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     die("Connection failed: " . $conn->connect_error);
   }
 
-  // Prepare the SQL query
-  $sql = "SELECT * FROM $table WHERE username = '$uname' AND password = '$password'";
+  // Prepare the SQL query to fetch the user's hashed password and salt
+  $sql = "SELECT password, salt FROM $table WHERE username = '$uname'";
 
   // Execute the query
   $result = $conn->query($sql);
 
-  // Check if a matching record is found
   if ($result->num_rows > 0) {
-    echo "<p>Login successful!</p>";
+    $row = $result->fetch_assoc();
+    $storedPassword = $row['password'];
+    $salt = $row['salt'];
+
+    // Hash the provided password with the retrieved salt
+    $hashedInputPassword = password_hash($password . $salt, PASSWORD_BCRYPT, ['cost' => 12]);
+
+    // Compare the newly hashed input password with the stored password
+    if (password_verify($password . $salt, $storedPassword)) {
+      echo "<p>Login successful!</p>";
+    } else {
+      echo "<p>Invalid username or password.</p>";
+    }
   } else {
     echo "<p>Invalid username or password.</p>";
   }
