@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -67,6 +66,39 @@ a {
   text-align: center;
 }
 </style>
+<script>
+  function validatePassword() {
+    var password = document.getElementById("psw");
+    var strengthBadge = document.getElementById("strengthBadge");
+    var strength = 0;
+
+    // Check password strength
+    if (password.value.match(/[a-zA-Z0-9][a-zA-Z0-9]+/)) {
+      strength += 1;
+    }
+    if (password.value.match(/[~<>?]+/)) {
+      strength += 1;
+    }
+    if (password.value.match(/[!@#$%^&*()]+/)) {
+      strength += 1;
+    }
+    if (password.value.length >= 8) {
+      strength += 1;
+    }
+
+    // Update the badge text and color
+    if (strength < 2) {
+      strengthBadge.style.backgroundColor = "red";
+      strengthBadge.textContent = "Weak";
+    } else if (strength == 2) {
+      strengthBadge.style.backgroundColor = "orange";
+      strengthBadge.textContent = "Moderate";
+    } else {
+      strengthBadge.style.backgroundColor = "green";
+      strengthBadge.textContent = "Strong";
+    }
+  }
+</script>
 </head>
 <body>
 
@@ -82,11 +114,16 @@ a {
 	<br>
 	<label for="email"><b>Email</b></label><br>
     <input type="text" placeholder="Enter Email" name="email" id="email" required>
+  <br>
 	<br>
+	<label for="phoneNumber"><b>Phone Number</b></label><br>
+    <input type="text" placeholder="Enter Phone Number" name="phoneNumber" id="phoneNumber" pattern="[0-9]{10}">
+  <br>
 	<br>
-    <label for="psw"><b>Password</b></label><br>
-    <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
-	<br>
+  <label for="psw"><b>Password</b></label><br>
+    <input type="password" placeholder="Enter Password" name="psw" id="psw" onkeyup="validatePassword()" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}" title="Password must contain at least one digit, one lowercase letter, one uppercase letter, one special character, and be at least 8 characters long" required>
+    <!-- Add this element for the strength indicator -->
+    <div id="strengthBadge"></div><br>
 	<br>
     <label for="psw-repeat"><b>Repeat Password</b></label><br>
     <input type="password" placeholder="Repeat Password" name="psw-repeat" id="psw-repeat" required>

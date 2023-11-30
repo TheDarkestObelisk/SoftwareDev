@@ -20,8 +20,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $uname = $_POST['username'];
   $email = $_POST['email'];
   $password = $_POST['psw'];
+  $password_repeat = $_POST['psw-repeat'];
+  $phoneNumber = $_POST['phoneNumber'];
 
   // Perform input validation here...
+
+  // Check if the password meets the specified criteria
+  if (!preg_match("/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}$/", $password)) {
+    die('Password must contain at least one digit, one lowercase letter, one uppercase letter, one special character, and be at least 8 characters long.');
+  }
+
+  // Check if phone number is valid
+  if (!preg_match("/[0-9]{10}$/", $phoneNumber)) {
+    die('Phone number must be a valid 10 digit phone number.');
+  }
+
+  // Check if the repeated password matches
+  if ($password !== $password_repeat) {
+    die('Passwords do not match.');
+  }
 
   // Generate a random salt
   $salt = bin2hex(random_bytes(16));
